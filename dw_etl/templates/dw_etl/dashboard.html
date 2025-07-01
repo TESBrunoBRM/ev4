@@ -1,0 +1,182 @@
+<!-- dw_etl/templates/dw_etl/dashboard.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Económico</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 0.5rem; /* Espacio entre filas */
+        }
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+        }
+        th {
+            background-color: #e5e7eb;
+            font-weight: 600;
+            color: #374151;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+        }
+        td {
+            background-color: #ffffff;
+            border-radius: 0.5rem; /* Bordes redondeados para las celdas */
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            color: #4b5563;
+        }
+        tr:hover td {
+            background-color: #f9fafb;
+        }
+        /* Ajustes para bordes redondeados en la cabecera de la tabla */
+        .rounded-t-lg th:first-child { border-top-left-radius: 0.5rem; }
+        .rounded-t-lg th:last-child { border-top-right-radius: 0.5rem; }
+        /* Ajustes para bordes redondeados en la última fila del cuerpo de la tabla */
+        .rounded-b-lg tr:last-child td:first-child { border-bottom-left-radius: 0.5rem; }
+        .rounded-b-lg tr:last-child td:last-child { border-bottom-right-radius: 0.5rem; }
+        .analysis-section {
+            background-color: #ffffff;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            margin-bottom: 2rem;
+        }
+        .analysis-section h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 1rem;
+        }
+        .analysis-section p {
+            color: #4b5563;
+            line-height: 1.6;
+            margin-bottom: 0.75rem;
+        }
+        .analysis-section ul {
+            list-style: disc;
+            padding-left: 1.5rem;
+            color: #4b5563;
+        }
+        .analysis-section ul li {
+            margin-bottom: 0.5rem;
+        }
+        .export-button {
+            display: inline-block;
+            background-color: #10B981; /* Color verde de Tailwind (emerald-500) */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .export-button:hover {
+            background-color: #059669; /* Verde más oscuro al pasar el ratón */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <div class="container py-8">
+        <h1 class="text-4xl font-bold text-center text-blue-700 mb-8 rounded-lg p-4 bg-white shadow-lg">
+            Dashboard de Indicadores Económicos
+        </h1>
+
+        {% if error_message %}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6" role="alert">
+                <strong class="font-bold">¡Error!</strong>
+                <span class="block sm:inline">{{ error_message }}</span>
+            </div>
+        {% endif %}
+
+        <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Datos Económicos Recientes (Año de Referencia: {{ current_year }})</h2>
+            <p class="text-sm text-gray-500 mb-6">
+                Nota: Los datos mostrados corresponden al año {{ current_year }} si están disponibles. Si no,
+                se muestra el dato más reciente encontrado en la API del Banco Mundial, junto con el año real de ese dato.
+                Es común que indicadores como el Crecimiento del PIB tengan un retraso en su publicación.
+            </p>
+            <div class="overflow-x-auto">
+                <table class="min-w-full">
+                    <thead>
+                        <tr class="rounded-t-lg">
+                            <th class="rounded-tl-lg">País</th>
+                            <th>Inflación (%)</th>
+                            <th>Crecimiento PIB (%)</th>
+                            <th>Tipo Cambio (USD/Local)</th>
+                            <th class="rounded-tr-lg">IPC (Índice)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for data in dashboard_data %}
+                            <tr>
+                                <td class="font-medium text-blue-600">{{ data.nombre_pais|default:"N/D" }}</td>
+                                <td>{{ data.inflacion|default:"N/D" }} <span class="text-xs text-gray-500">({{ data.anio_dato_inflacion|default:"N/D" }})</span></td>
+                                <td>{{ data.pib_crecimiento|default:"N/D" }} <span class="text-xs text-gray-500">({{ data.anio_dato_pib|default:"N/D" }})</span></td>
+                                <td>{{ data.tipo_cambio|default:"N/D" }} <span class="text-xs text-gray-500">({{ data.anio_dato_tipo_cambio|default:"N/D" }})</span></td>
+                                <td>{{ data.ipc|default:"N/D" }} <span class="text-xs text-gray-500">({{ data.anio_dato_ipc|default:"N/D" }})</span></td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center py-4">No hay datos disponibles. Ejecuta el comando `populate_dw` para cargar datos.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-8 text-center">
+                <a href="{% url 'export_excel' %}" class="export-button">
+                    Exportar Datos a Excel
+                </a>
+            </div>
+        </div>
+
+        <div class="analysis-section">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Análisis Comparativo</h2>
+
+            <h3>1. ¿Qué país ha mantenido mejor control de la inflación?</h3>
+            {% if best_inflation_country %}
+                <p>Basado en los datos más recientes disponibles, el país con la <strong>inflación más baja</strong> es <strong>{{ best_inflation_country }}</strong>, con un <strong>{{ min_inflation_value|floatformat:4 }}%</strong>. Esto sugiere un control inflacionario muy estricto en el periodo reciente.</p>
+            {% else %}
+                <p>No hay datos de inflación disponibles para realizar esta comparación.</p>
+            {% endif %}
+
+            <h3>2. ¿En qué periodo coincidió una fuerte devaluación con recesión?</h3>
+            <p>{{ historical_data_limitation_message }}</p>
+            <p>Para un análisis preciso de periodos históricos (como devaluación vs. recesión), se necesitaría un conjunto de datos históricos más extenso (series de tiempo) y un análisis estadístico más profundo. Los datos actuales se centran en los valores más recientes disponibles.</p>
+
+
+            <h3>3. ¿Qué relación hay entre tipo de cambio y crecimiento en cada país?</h3>
+            <p>{{ historical_data_limitation_message }}</p>
+            <p>Para establecer una relación sólida y estadísticamente significativa entre el tipo de cambio y el crecimiento del PIB, se necesitaría un análisis de series de tiempo y correlación sobre un periodo extenso. Con los datos actuales (un único punto de dato reciente por país para cada indicador), solo podemos observar los valores más recientes y no determinar una relación causal o correlacional robusta.</p>
+        </div>
+
+        <div class="analysis-section mt-8">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Conclusión General sobre los Hallazgos del Modelo</h2>
+            <p>El modelo de Data Warehouse implementado y poblado con los datos más recientes de la API del Banco Mundial ha demostrado ser efectivo para:</p>
+            <ul>
+                <li><strong>Centralizar y estructurar</strong> información económica clave (inflación, PIB, tipo de cambio, IPC) de múltiples países.</li>
+                <li><strong>Facilitar la visualización</strong> de los indicadores más recientes, permitiendo una comparación rápida entre países en un punto en el tiempo.</li>
+                <li><strong>Identificar rápidamente el país con el mejor control de inflación</strong> en el periodo reciente (según los datos disponibles, el país con el valor más bajo).</li>
+            </ul>
+            <p>Sin embargo, para abordar preguntas que implican <strong>análisis de tendencias históricas, correlaciones o identificación de periodos específicos (como devaluación y recesión)</strong>, el modelo actual necesitaría ser ampliado para incluir series de tiempo completas de los indicadores. La estructura dimensional (esquema estrella) ya está preparada para manejar estos datos históricos si se incorporan en el proceso ETL. La principal limitación en este momento es la profundidad histórica de los datos extraídos, no el diseño del DW en sí.</p>
+        </div>
+    </div>
+</body>
+</html>
