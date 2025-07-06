@@ -1,0 +1,100 @@
+# DataW - Data Warehouse Económico
+
+Este proyecto es un Data Warehouse (DW) económico construido con Django, que centraliza y visualiza indicadores clave (inflación, crecimiento PIB, tipo de cambio, IPC) de varios países, utilizando datos extraídos automáticamente desde la API del Banco Mundial.
+
+## Estructura del Proyecto
+
+```
+DataW/                # Proyecto principal Django (configuración)
+dw_etl/               # Aplicación principal: modelos, vistas, ETL, templates
+    management/commands/populate_dw.py   # Script ETL para poblar el DW desde la API del Banco Mundial
+    models.py          # Modelos dimensionales y de hechos
+    views.py           # Vistas para dashboard y exportación
+    templates/dw_etl/dashboard.html  # Dashboard web
+db.sqlite3             # Base de datos SQLite por defecto
+manage.py              # Utilidad de gestión Django
+requirements.txt       # Dependencias del proyecto
+```
+
+## Instalación y Dependencias
+
+1. **Clona el repositorio** y navega al directorio del proyecto.
+2. **Crea un entorno virtual** (opcional pero recomendado):
+
+    ```sh
+    python -m venv venv
+    source venv/bin/activate  # En Windows: venv\Scripts\activate
+    ```
+
+3. **Instala las dependencias**:
+
+    ```sh
+    pip install -r requirements.txt
+    ```
+
+    Las dependencias principales son:
+    - Django >= 5.0
+    - requests
+
+4. **Aplica las migraciones** para crear la base de datos:
+
+    ```sh
+    python manage.py migrate
+    ```
+
+## Poblar el Data Warehouse (ETL)
+
+El comando ETL extrae los datos más recientes de la API del Banco Mundial y los carga en el DW:
+
+```sh
+python manage.py populate_dw
+```
+
+- Extrae datos de inflación, crecimiento PIB, tipo de cambio y IPC para varios países.
+- Si ya existen datos, los actualiza.
+- No requiere claves de API.
+
+## Ejecutar el servidor web
+
+Inicia el servidor de desarrollo de Django:
+
+```sh
+python manage.py runserver
+```
+
+Accede al dashboard en: [http://localhost:8000/dashboard/](http://localhost:8000/dashboard/)
+
+## Funcionalidades
+
+- **Dashboard web**: Visualiza los indicadores económicos más recientes por país.
+- **Exportar a Excel**: Descarga los datos mostrados en el dashboard en formato Excel.
+- **Análisis comparativo**: Identifica el país con menor inflación y muestra comparaciones clave.
+
+## Estructura de Datos
+
+- **Modelo estrella**: Dimensiones para país, fecha, indicador y fuente; hechos económicos con los valores extraídos.
+- **Datos históricos**: Actualmente se almacena solo el dato más reciente por indicador y país, pero la estructura permite ampliar a series de tiempo completas.
+
+## Personalización
+
+- Para agregar más países, edita la lista `PAISES_INTERES` en [`dw_etl/management/commands/populate_dw.py`](dw_etl/management/commands/populate_dw.py).
+- Para agregar nuevos indicadores, edita el diccionario `INDICADORES` en el mismo archivo.
+
+## Archivos principales
+
+- [`DataW/settings.py`](DataW/settings.py): Configuración del proyecto Django.
+- [`dw_etl/models.py`](dw_etl/models.py): Definición de modelos dimensionales y de hechos.
+- [`dw_etl/views.py`](dw_etl/views.py): Lógica de vistas y exportación.
+- [`dw_etl/management/commands/populate_dw.py`](dw_etl/management/commands/populate_dw.py): Proceso ETL.
+- [`dw_etl/templates/dw_etl/dashboard.html`](dw_etl/templates/dw_etl/dashboard.html): Template del dashboard.
+
+## Notas
+
+- El proyecto usa SQLite por defecto, pero puedes cambiar la base de datos en [`DataW/settings.py`](DataW/settings.py).
+- El idioma y zona horaria están configurados para español y Chile, respectivamente.
+- No se requiere autenticación para acceder al dashboard.
+
+---
+
+**Autor:**  
+Bruno Revuelta, Ricardo Labra
