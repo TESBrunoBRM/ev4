@@ -4,179 +4,356 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Económico</title>
+    <title>Dashboard Económico Profesional</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        /* Base styles for a professional look (User's provided light theme) */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
+            background-color: #f8fafc; /* Light gray background */
+            color: #334155; /* Darker text for readability */
         }
         .container {
-            max-width: 1200px;
+            max-width: 1280px; /* Slightly wider container */
             margin: 0 auto;
-            padding: 2rem;
+            padding: 2.5rem; /* More padding */
         }
+        h1, h2, h3 {
+            color: #1e293b; /* Darker headings */
+        }
+        h1 {
+            font-weight: 800; /* Extra bold for main title */
+            letter-spacing: -0.025em; /* Slight letter spacing for titles */
+        }
+        h2 {
+            font-weight: 700; /* Bold for section titles */
+        }
+        h3 {
+            font-weight: 600; /* Semi-bold for sub-titles */
+            color: #334155; /* User's specific color for h3 */
+        }
+
+        /* Card-like sections */
+        .card {
+            background-color: #ffffff;
+            padding: 2rem;
+            border-radius: 0.75rem; /* More rounded corners */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Stronger, softer shadow */
+            margin-bottom: 2rem;
+            border: 1px solid #e2e8f0; /* Subtle border */
+        }
+
+        /* Table specific styles */
         table {
             width: 100%;
             border-collapse: separate;
-            border-spacing: 0 0.5rem; /* Espacio entre filas */
+            border-spacing: 0 0.75rem; /* More space between rows */
         }
         th, td {
-            padding: 0.75rem 1rem;
+            padding: 1rem 1.25rem; /* More padding in cells */
             text-align: left;
+            font-size: 0.95rem; /* Slightly larger font for data */
         }
         th {
-            background-color: #e5e7eb;
+            background-color: #eef2f6; /* Lighter header background */
             font-weight: 600;
-            color: #374151;
+            color: #475569; /* Slightly softer header text */
             text-transform: uppercase;
-            font-size: 0.875rem;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid #cbd5e1; /* Clearer separation */
         }
         td {
             background-color: #ffffff;
-            border-radius: 0.5rem; /* Bordes redondeados para las celdas */
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-            color: #4b5563;
+            border-radius: 0.75rem; /* Consistent with card corners */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* Softer shadow for cells */
+            color: #475569;
+            transition: all 0.2s ease-in-out; /* Smooth hover effect */
         }
         tr:hover td {
-            background-color: #f9fafb;
+            background-color: #f0f4f8; /* Subtle hover background */
+            transform: translateY(-2px); /* Slight lift on hover */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        /* Ajustes para bordes redondeados en la cabecera de la tabla */
-        .rounded-t-lg th:first-child { border-top-left-radius: 0.5rem; }
-        .rounded-t-lg th:last-child { border-top-right-radius: 0.5rem; }
-        /* Ajustes para bordes redondeados en la última fila del cuerpo de la tabla */
-        .rounded-b-lg tr:last-child td:first-child { border-bottom-left-radius: 0.5rem; }
-        .rounded-b-lg tr:last-child td:last-child { border-bottom-right-radius: 0.5rem; }
-        .analysis-section {
-            background-color: #ffffff;
-            padding: 1.5rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-            margin-bottom: 2rem;
+        /* Remove default rounded-t-lg/rounded-b-lg as cells are now individual cards */
+        thead tr:first-child th:first-child { border-top-left-radius: 0.75rem; }
+        thead tr:first-child th:last-child { border-top-right-radius: 0.75rem; }
+        tbody tr:last-child td:first-child { border-bottom-left-radius: 0.75rem; }
+        tbody tr:last-child td:last-child { border-bottom-right-radius: 0.75rem; }
+
+        .filter-input {
+            width: 100%;
+            padding: 0.6rem 0.8rem; /* Adjusted padding */
+            margin-bottom: 0.75rem; /* More space below filters */
+            border: 1px solid #cbd5e1; /* Softer border */
+            border-radius: 0.375rem; /* Slightly more rounded */
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03); /* Subtle inner shadow */
+            font-size: 0.95rem;
+            color: #475569;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
-        .analysis-section h3 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #374151;
-            margin-bottom: 1rem;
+        .filter-input:focus {
+            outline: none;
+            border-color: #60a5fa; /* Blue focus border */
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.3); /* Blue focus ring */
         }
-        .analysis-section p {
-            color: #4b5563;
-            line-height: 1.6;
-            margin-bottom: 0.75rem;
-        }
-        .analysis-section ul {
-            list-style: disc;
-            padding-left: 1.5rem;
-            color: #4b5563;
-        }
-        .analysis-section ul li {
-            margin-bottom: 0.5rem;
-        }
+
         .export-button {
-            display: inline-block;
-            background-color: #10B981; /* Color verde de Tailwind (emerald-500) */
-            color: white;
-            padding: 0.75rem 1.5rem;
+            background: linear-gradient(90deg, #00f2aa, #5fffd6);
+            color: #0f0f0f;
+            padding: 0.8rem 2rem;
+            font-weight: 700;
             border-radius: 0.5rem;
-            font-weight: 600;
-            text-decoration: none;
-            transition: background-color 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 15px rgba(0, 255, 170, 0.3);
+            transition: all 0.3s ease;
+            text-decoration: none; /* Ensure no underline for anchor tag */
         }
+
         .export-button:hover {
-            background-color: #059669; /* Verde más oscuro al pasar el ratón */
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(0, 255, 170, 0.5);
+            background: linear-gradient(90deg, #5fffd6, #00f2aa);
+        }
+
+        .year-selector-container {
+            margin-bottom: 2rem; /* More space below selector */
+            padding: 1rem;
+            background-color: #f0f4f8; /* Light background for the selector area */
+            border-radius: 0.5rem;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+            display: flex; /* Use flexbox for alignment */
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+        }
+        .year-selector {
+            padding: 0.6rem 1.2rem;
+            border: 1px solid #94a3b8; /* Softer border */
+            border-radius: 0.375rem;
+            background-color: white;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #334155;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            appearance: none; /* Remove default select arrow */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1.25em;
+            cursor: pointer;
+        }
+        .year-selector:focus {
+            outline: none;
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.3);
+        }
+        .year-selector-label {
+            color: #475569;
+            font-weight: 600;
+        }
+        /* Error message specific styling (from previous versions, adapted to light theme) */
+        .bg-red-100 {
+            background-color: #fee2e2; /* Light red background */
+            color: #ef4444; /* Red text */
+            border-color: #fca5a5; /* Red border */
+        }
+        .text-red-700 {
+            color: #ef4444; /* Ensure error text is red */
+        }
+        /* Adjusting existing text colors to new light theme */
+        .text-gray-600 { /* For the note below year selector */
+            color: #64748b; /* Medium gray */
+        }
+        .text-gray-500 { /* For "No hay datos disponibles" in table */
+            color: #94a3b8; /* Light gray */
+        }
+        .text-blue-700 { /* For country names and analysis highlights */
+            color: #2563eb; /* A standard blue that contrasts well on light */
+        }
+        .text-gray-800 { /* For h2 titles within cards */
+            color: #1e293b; /* Dark text */
+        }
+        .text-gray-700 { /* For general paragraph text within cards */
+            color: #334155; /* Darker text */
+        }
+        .chart-container {
+            position: relative;
+            height: 400px;
+            width: 100%;
+            margin-top: 2rem;
+        }
+        .export-buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem; /* Espacio entre los botones */
+            margin-top: 2.5rem;
+        }
+        /* Estilo para el botón JSON, copiado del botón Excel */
+        .export-button-json {
+            background: linear-gradient(90deg, #00f2aa, #5fffd6); /* Mismo gradiente que Excel */
+            color: #0f0f0f; /* Mismo color de texto que Excel */
+            padding: 0.8rem 2rem;
+            font-weight: 700;
+            border-radius: 0.5rem;
+            box-shadow: 0 0 15px rgba(0, 255, 170, 0.3); /* Misma sombra que Excel */
+            transition: all 0.3s ease; /* Misma transición que Excel */
+            text-decoration: none; /* Asegurar que no haya subrayado */
+        }
+        .export-button-json:hover {
+            transform: translateY(-2px); /* Mismo efecto de levantamiento que Excel */
+            box-shadow: 0 0 20px rgba(0, 255, 170, 0.5); /* Misma sombra de hover que Excel */
+            background: linear-gradient(90deg, #5fffd6, #00f2aa); /* Mismo gradiente de hover que Excel */
         }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
-    <div class="container py-8">
-        <h1 class="text-4xl font-bold text-center text-blue-700 mb-8 rounded-lg p-4 bg-white shadow-lg">
+    <div class="container py-10">
+        <h1 class="text-5xl font-extrabold text-center text-blue-800 mb-12">
             Dashboard de Indicadores Económicos
         </h1>
 
         {% if error_message %}
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6" role="alert">
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-8 card" role="alert">
                 <strong class="font-bold">¡Error!</strong>
                 <span class="block sm:inline">{{ error_message }}</span>
             </div>
         {% endif %}
 
-        <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
-            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Datos Económicos Recientes (Año de Referencia: {{ current_year }})</h2>
-            <p class="text-sm text-gray-500 mb-6">
-                Nota: Los datos mostrados corresponden al año {{ current_year }} si están disponibles. Si no,
-                se muestra el dato más reciente encontrado en la API del Banco Mundial, junto con el año real de ese dato.
-                Es común que indicadores como el Crecimiento del PIB tengan un retraso en su publicación.
+        <div class="card">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">Datos Económicos por Año</h2>
+            <div class="year-selector-container">
+                <label for="year-select" class="year-selector-label mr-4">Seleccionar Año:</label>
+                <select id="year-select" class="year-selector">
+                    {% for year in available_years %}
+                        <option value="{{ year }}" {% if year == current_year %}selected{% endif %}>{{ year }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <p class="text-sm text-gray-600 mb-8">
+                Nota: Los datos mostrados corresponden al año seleccionado. Es común que indicadores como el Crecimiento del PIB tengan un retraso en su publicación.
             </p>
             <div class="overflow-x-auto">
-                <table class="min-w-full">
+                <table class="min-w-full" id="economicDataTable">
                     <thead>
-                        <tr class="rounded-t-lg">
-                            <th class="rounded-tl-lg">País</th>
+                        <tr>
+                            <th>País</th>
                             <th>Inflación (%)</th>
                             <th>Crecimiento PIB (%)</th>
                             <th>Tipo Cambio (USD/Local)</th>
-                            <th class="rounded-tr-lg">IPC (Índice)</th>
+                            <th>IPC (Índice)</th>
+                        </tr>
+                        <!-- Fila de filtros -->
+                        <tr class="filter-row">
+                            <th><input type="text" class="filter-input" placeholder="Filtrar País" data-col="0"></th>
+                            <th><input type="text" class="filter-input" placeholder="Filtrar Inflación" data-col="1"></th>
+                            <th><input type="text" class="filter-input" placeholder="Filtrar PIB" data-col="2"></th>
+                            <th><input type="text" class="filter-input" placeholder="Filtrar Tipo Cambio" data-col="3"></th>
+                            <th><input type="text" class="filter-input" placeholder="Filtrar IPC" data-col="4"></th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for data in dashboard_data %}
                             <tr>
-                                <td class="font-medium text-blue-600">{{ data.nombre_pais|default:"N/D" }}</td>
-                                <td>{{ data.inflacion|default:"N/D" }} <span class="text-xs text-gray-500">({{ data.anio_dato_inflacion|default:"N/D" }})</span></td>
-                                <td>{{ data.pib_crecimiento|default:"N/D" }} <span class="text-xs text-gray-500">({{ data.anio_dato_pib|default:"N/D" }})</span></td>
-                                <td>{{ data.tipo_cambio|default:"N/D" }} <span class="text-xs text-gray-500">({{ data.anio_dato_tipo_cambio|default:"N/D" }})</span></td>
-                                <td>{{ data.ipc|default:"N/D" }} <span class="text-xs text-gray-500">({{ data.anio_dato_ipc|default:"N/D" }})</span></td>
+                                <td class="font-medium text-blue-700">{{ data.nombre_pais|default:"N/D" }}</td>
+                                <td>{{ data.inflacion|default:"N/D" }}</td>
+                                <td>{{ data.pib_crecimiento|default:"N/D" }}</td>
+                                <td>{{ data.tipo_cambio|default:"N/D" }}</td>
+                                <td>{{ data.ipc|default:"N/D" }}</td>
                             </tr>
                         {% empty %}
                             <tr>
-                                <td colspan="5" class="text-center py-4">No hay datos disponibles. Ejecuta el comando `populate_dw` para cargar datos.</td>
+                                <td colspan="5" class="text-center py-4 text-gray-500">No hay datos disponibles para el año seleccionado. Ejecuta el comando `populate_dw` para cargar datos.</td>
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
-            <div class="mt-8 text-center">
+            <div class="export-buttons-container">
                 <a href="{% url 'export_excel' %}" class="export-button">
-                    Exportar Datos a Excel
+                    Exportar Datos Históricos a Excel
+                </a>
+                <a href="{% url 'export_json' %}" class="export-button-json">
+                    Exportar Datos Históricos a JSON
                 </a>
             </div>
         </div>
 
-        <div class="analysis-section">
-            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Análisis Comparativo</h2>
+        <div class="card analysis-section">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">Análisis Comparativo</h2>
 
-            <h3>1. ¿Qué país ha mantenido mejor control de la inflación?</h3>
+            <h3 class="text-2xl mb-3">1. ¿Qué país ha mantenido mejor control de la inflación?</h3>
             {% if best_inflation_country %}
-                <p>Basado en los datos más recientes disponibles, el país con la <strong>inflación más baja</strong> es <strong>{{ best_inflation_country }}</strong>, con un <strong>{{ min_inflation_value|floatformat:4 }}%</strong>. Esto sugiere un control inflacionario muy estricto en el periodo reciente.</p>
+                <p class="text-lg text-gray-700 mb-6">Basado en los datos del año <strong>{{ current_year }}</strong>, el país con la <strong>inflación más baja</strong> es <strong class="text-blue-700">{{ best_inflation_country }}</strong>, con un <strong class="text-blue-700">{{ min_inflation_value|floatformat:4 }}%</strong>. Esto sugiere un control inflacionario muy estricto en el periodo reciente.</p>
             {% else %}
-                <p>No hay datos de inflación disponibles para realizar esta comparación.</p>
+                <p class="text-lg text-gray-700 mb-6">No hay datos de inflación disponibles para el año {{ current_year }} para realizar esta comparación.</p>
             {% endif %}
 
-            <h3>2. ¿En qué periodo coincidió una fuerte devaluación con recesión?</h3>
-            <p>{{ historical_data_limitation_message }}</p>
-            <p>Para un análisis preciso de periodos históricos (como devaluación vs. recesión), se necesitaría un conjunto de datos históricos más extenso (series de tiempo) y un análisis estadístico más profundo. Los datos actuales se centran en los valores más recientes disponibles.</p>
+            <h3 class="text-2xl mb-3">2. ¿En qué periodo coincidió una fuerte devaluación con recesión?</h3>
+            <p class="text-lg text-gray-700 mb-6">{{ analysis_message_devaluation_recession }}</p>
 
 
-            <h3>3. ¿Qué relación hay entre tipo de cambio y crecimiento en cada país?</h3>
-            <p>{{ historical_data_limitation_message }}</p>
-            <p>Para establecer una relación sólida y estadísticamente significativa entre el tipo de cambio y el crecimiento del PIB, se necesitaría un análisis de series de tiempo y correlación sobre un periodo extenso. Con los datos actuales (un único punto de dato reciente por país para cada indicador), solo podemos observar los valores más recientes y no determinar una relación causal o correlacional robusta.</p>
+            <h3 class="text-2xl mb-3">3. ¿Qué relación hay entre tipo de cambio y crecimiento en cada país?</h3>
+            <p class="text-lg text-gray-700 mb-6">{{ analysis_message_exchange_gdp_relation }}</p>
         </div>
 
-        <div class="analysis-section mt-8">
-            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Conclusión General sobre los Hallazgos del Modelo</h2>
-            <p>El modelo de Data Warehouse implementado y poblado con los datos más recientes de la API del Banco Mundial ha demostrado ser efectivo para:</p>
-            <ul>
-                <li><strong>Centralizar y estructurar</strong> información económica clave (inflación, PIB, tipo de cambio, IPC) de múltiples países.</li>
-                <li><strong>Facilitar la visualización</strong> de los indicadores más recientes, permitiendo una comparación rápida entre países en un punto en el tiempo.</li>
-                <li><strong>Identificar rápidamente el país con el mejor control de inflación</strong> en el periodo reciente (según los datos disponibles, el país con el valor más bajo).</li>
-            </ul>
-            <p>Sin embargo, para abordar preguntas que implican <strong>análisis de tendencias históricas, correlaciones o identificación de periodos específicos (como devaluación y recesión)</strong>, el modelo actual necesitaría ser ampliado para incluir series de tiempo completas de los indicadores. La estructura dimensional (esquema estrella) ya está preparada para manejar estos datos históricos si se incorporan en el proceso ETL. La principal limitación en este momento es la profundidad histórica de los datos extraídos, no el diseño del DW en sí.</p>
+        <!-- La sección de Evolución Histórica de Chile ha sido eliminada según tu solicitud -->
+
+        <div class="card analysis-section mt-8">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">Conclusión General sobre los Hallazgos del Modelo</h2>
+            <p class="text-lg text-gray-700 mb-4">{{ conclusion_message }}</p>
         </div>
     </div>
+
+    <!-- El script para pasar datos de Chart.js y la inicialización del gráfico también han sido eliminados -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterInputs = document.querySelectorAll('.filter-input');
+            const table = document.getElementById('economicDataTable');
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr')); 
+
+            // Función para aplicar los filtros
+            function applyFilters() {
+                rows.forEach(row => {
+                    let rowMatches = true;
+                    filterInputs.forEach(input => {
+                        const filterValue = input.value.toLowerCase();
+                        const columnIndex = parseInt(input.dataset.col);
+                        const cell = row.children[columnIndex];
+
+                        if (cell) {
+                            const cellText = cell.textContent.toLowerCase();
+                            if (filterValue && !cellText.includes(filterValue)) {
+                                rowMatches = false;
+                            }
+                        }
+                    });
+
+                    if (rowMatches) {
+                        row.style.display = ''; // Mostrar la fila
+                    } else {
+                        row.style.display = 'none'; // Ocultar la fila
+                    }
+                });
+            }
+
+            // Añadir event listeners a los inputs de filtro
+            filterInputs.forEach(input => {
+                input.addEventListener('keyup', applyFilters);
+            });
+
+            // Manejar el selector de año
+            const yearSelect = document.getElementById('year-select');
+            if (yearSelect) {
+                yearSelect.addEventListener('change', function() {
+                    // Redirige a la misma URL con el año seleccionado como parámetro de consulta
+                    window.location.href = `?year=${this.value}`;
+                });
+            }
+        });
+    </script>
 </body>
 </html>

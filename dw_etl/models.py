@@ -1,4 +1,3 @@
-# dw_etl/models.py
 from django.db import models
 
 class DimFecha(models.Model):
@@ -46,6 +45,7 @@ class DimFuenteDatos(models.Model):
 
 class HechosEconomicos(models.Model):
     # ID_Hecho será auto-incremento por defecto en Django
+    # id_fecha ahora apuntará al año real del dato
     id_fecha = models.ForeignKey(DimFecha, on_delete=models.CASCADE)
     id_pais = models.ForeignKey(DimPais, on_delete=models.CASCADE)
     id_indicador = models.ForeignKey(DimIndicadorEconomico, on_delete=models.CASCADE)
@@ -54,12 +54,12 @@ class HechosEconomicos(models.Model):
     variacion_pib_anual = models.DecimalField(max_digits=10, decimal_places=4, null=True, blank=True)
     tipo_cambio_usd_local_promedio_cierre = models.DecimalField(max_digits=15, decimal_places=6, null=True, blank=True)
     ipc_o_devaluacion = models.DecimalField(max_digits=10, decimal_places=4, null=True, blank=True)
-    # Nuevo campo para almacenar el año real del dato si es diferente al año de referencia (2025)
-    anio_dato_real = models.IntegerField(null=True, blank=True)
+    # anio_dato_real se elimina, ya que el año está en id_fecha.
 
     class Meta:
         # Asegura que no haya duplicados para la misma combinación de fecha, país, indicador
+        # Ahora, id_fecha será el año real del dato
         unique_together = ('id_fecha', 'id_pais', 'id_indicador')
 
     def __str__(self):
-        return f"Hecho Económico: {self.id_pais.nombre_pais} - {self.id_indicador.nombre_indicador} - {self.id_fecha.anio} (Dato: {self.anio_dato_real})"
+        return f"Hecho Económico: {self.id_pais.nombre_pais} - {self.id_indicador.nombre_indicador} - {self.id_fecha.anio}"

@@ -5,6 +5,7 @@ from . import views
 
 urlpatterns = [
     path('dashboard/', views.dashboard_view, name='dashboard'),
-    path('', views.dashboard_view, name='home'), # Para que la raíz del sitio vaya al dashboard
-    path('export/excel/', views.export_economic_data_excel, name='export_excel'), # Nueva URL para exportar
+    path('', views.dashboard_view, name='home'),
+    path('export/excel/', views.export_economic_data_excel, name='export_excel'),
+    path('export/json/', views.export_economic_data_json, name='export_json'), # Nueva URL para JSON
 ]
