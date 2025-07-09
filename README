@@ -16,7 +16,7 @@ manage.py              # Utilidad de gestión Django
 requirements.txt       # Dependencias del proyecto
 ```
 
-<H2> ## Instalación y Dependencias </H2>
+## Instalación y Dependencias 
 
 1. **Clona el repositorio** y navega al directorio del proyecto.
 2. **Crea un entorno virtual** (opcional pero recomendado):
